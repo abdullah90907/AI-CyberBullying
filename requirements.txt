@@ -15,6 +15,7 @@ pydantic-core==2.23.4
 # Security
 passlib[bcrypt]==1.7.4
 bcrypt==4.2.0
+werkzeug==3.0.4
 
 # AI/ML - use specific versions known to work well together
 transformers==4.45.0
