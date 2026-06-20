@@ -13,6 +13,8 @@ origins = [
     "http://localhost",
     "https://localhost",
     "capacitor://localhost",
+    "https://ai-cyber-bullying.vercel.app",
+    "https://ai-cyberbullying.vercel.app",
 ]
 
 
