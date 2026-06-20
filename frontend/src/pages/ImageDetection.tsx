@@ -8,8 +8,9 @@ import {
   Loader2,
   ChevronLeft,
   TrendingUp,
-  FileText,
-  Eye
+  Eye,
+  Sparkles,
+  ShieldCheck
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ProtectedLayout from '../components/ProtectedLayout';
@@ -300,58 +301,52 @@ const ImageDetection: React.FC<ImageDetectionProps> = ({ isDark, onLogout }) => 
             ) : analysisResult ? (
               <div className="flex flex-col h-full w-full space-y-6 text-left">
                 <div className={cn(
-                  'p-6 rounded-2xl text-center',
-                  analysisResult.final_verdict.result_label === 'toxic' 
-                    ? 'bg-red-500/10 border-2 border-red-500/30' 
-                    : 'bg-green-500/10 border-2 border-green-500/30'
+                  'py-6 px-4 rounded-3xl border text-center shadow-lg flex items-center justify-center',
+                  analysisResult.final_verdict.result_label === 'toxic'
+                    ? 'bg-red-500/10 border-red-500/30'
+                    : 'bg-green-500/10 border-green-500/30'
                 )}>
                   <p className={cn(
-                    'text-4xl md:text-6xl font-black mb-2',
+                    'text-3xl md:text-4xl font-black uppercase tracking-wider leading-tight',
                     analysisResult.final_verdict.result_label === 'toxic' ? 'text-red-500' : 'text-green-500'
                   )}>
-                    {(analysisResult.final_verdict.final_score * 100).toFixed(1)}%
-                  </p>
-                  <p className={cn(
-                    'text-lg md:text-xl font-bold uppercase tracking-wider',
-                    analysisResult.final_verdict.result_label === 'toxic' ? 'text-red-400' : 'text-green-400'
-                  )}>
-                    {analysisResult.final_verdict.result_label === 'toxic' ? 'Threat Detected' : 'Clean'}
+                    {analysisResult.final_verdict.result_label === 'toxic' ? 'THREAT DETECTED' : 'CLEAN'}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className={cn(
-                    'p-4 rounded-2xl',
+                    'p-4 rounded-2xl border',
                     isDark ? 'bg-slate-800/30' : 'bg-slate-100'
                   )}>
                     <div className="flex items-center gap-3 mb-2">
-                      <FileText className="w-5 h-5 text-primary" />
+                      <Sparkles className="w-5 h-5 text-primary" />
                       <p className={cn(
-                        'text-sm font-bold',
+                        'text-xs font-bold uppercase tracking-wider',
                         isDark ? 'text-slate-300' : 'text-slate-700'
                       )}>
-                        Text Score
+                        Engine
                       </p>
                     </div>
-                    <p className="text-2xl md:text-3xl font-black text-primary">
-                      {(analysisResult.analysis_breakdown.text_toxicity_score * 100).toFixed(1)}%
+                    <p className="text-xl md:text-2xl font-black text-primary">
+                      Gemini Vision
                     </p>
                   </div>
                   <div className={cn(
-                    'p-4 rounded-2xl',
+                    'p-4 rounded-2xl border',
                     isDark ? 'bg-slate-800/30' : 'bg-slate-100'
                   )}>
                     <div className="flex items-center gap-3 mb-2">
-                      <Eye className="w-5 h-5 text-secondary" />
+                      <ShieldCheck className="w-5 h-5 text-secondary" />
                       <p className={cn(
-                        'text-sm font-bold',
+                        'text-xs font-bold uppercase tracking-wider',
                         isDark ? 'text-slate-300' : 'text-slate-700'
                       )}>
-                        Vision Score
+                        Confidence
                       </p>
                     </div>
-                    <p className="text-2xl md:text-3xl font-black text-secondary">
-                      {(analysisResult.analysis_breakdown.vision_toxicity_score * 100).toFixed(1)}%
+                    <p className="text-xl md:text-2xl font-black text-secondary">
+                      {analysisResult.final_verdict.final_score > 0.8 ? 'High' : 'Moderate'}
                     </p>
                   </div>
                 </div>
@@ -381,10 +376,10 @@ const ImageDetection: React.FC<ImageDetectionProps> = ({ isDark, onLogout }) => 
                     'text-sm uppercase tracking-wide font-semibold mb-2',
                     isDark ? 'text-slate-400' : 'text-gray-500'
                   )}>
-                    AI Reasoning
+                    AI REASONING
                   </p>
                   <p className={cn(
-                    'leading-relaxed',
+                    'leading-relaxed italic',
                     isDark ? 'text-slate-300' : 'text-gray-700'
                   )}>
                     {analysisResult.final_verdict.reasoning}
