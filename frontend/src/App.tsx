@@ -43,7 +43,13 @@ interface UserData {
   }>;
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+// Ensure API_BASE always ends with a slash for proper URL construction
+const getApiBase = () => {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1/';
+  return baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+};
+
+const API_BASE = getApiBase();
 
 function AppContent() {
   const [isDark, setIsDark] = useState(true);
