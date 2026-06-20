@@ -3,7 +3,10 @@ services:
     name: omniguard-backend
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
+    # Use Python 3.11 for better compatibility
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
     startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
