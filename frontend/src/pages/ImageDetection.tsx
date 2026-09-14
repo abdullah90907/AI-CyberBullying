@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import ProtectedLayout from '../components/ProtectedLayout';
 import { FadeIn } from '../components/SectionWrapper';
 import { cn } from '../lib/utils';
+import { TaxonomyTags, ManipulationBadge } from '../components/TaxonomyTags';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
 
@@ -28,12 +29,16 @@ interface AnalysisBreakdown {
   text_toxicity_score: number;
   vision_toxicity_score: number;
   local_combined_score: number;
+  manipulation_score?: number;
+  self_harm_score?: number;
 }
 
 interface FinalVerdict {
   result_label: 'safe' | 'toxic';
   final_score: number;
   reasoning: string;
+  violated_categories?: string[];
+  is_likely_manipulated?: boolean;
 }
 
 interface FileInfo {
@@ -113,6 +118,8 @@ const ImageDetection: React.FC<ImageDetectionProps> = ({ isDark, onLogout }) => 
         date: new Date().toLocaleString(),
         result: data.final_verdict.result_label,
         score: data.final_verdict.final_score * 100,
+        violated_categories: data.final_verdict.violated_categories || [],
+        is_likely_manipulated: data.final_verdict.is_likely_manipulated || false,
       };
       history.unshift(newItem);
       localStorage.setItem('omniguard_history', JSON.stringify(history));
@@ -301,7 +308,7 @@ const ImageDetection: React.FC<ImageDetectionProps> = ({ isDark, onLogout }) => 
             ) : analysisResult ? (
               <div className="flex flex-col h-full w-full space-y-6 text-left">
                 <div className={cn(
-                  'py-6 px-4 rounded-3xl border text-center shadow-lg flex items-center justify-center',
+                  'py-6 px-4 rounded-3xl border text-center shadow-lg flex flex-col items-center justify-center gap-2',
                   analysisResult.final_verdict.result_label === 'toxic'
                     ? 'bg-red-500/10 border-red-500/30'
                     : 'bg-green-500/10 border-green-500/30'
@@ -312,6 +319,7 @@ const ImageDetection: React.FC<ImageDetectionProps> = ({ isDark, onLogout }) => 
                   )}>
                     {analysisResult.final_verdict.result_label === 'toxic' ? 'THREAT DETECTED' : 'CLEAN'}
                   </p>
+                  <ManipulationBadge isLikelyManipulated={analysisResult.final_verdict.is_likely_manipulated} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -342,14 +350,36 @@ const ImageDetection: React.FC<ImageDetectionProps> = ({ isDark, onLogout }) => 
                         'text-xs font-bold uppercase tracking-wider',
                         isDark ? 'text-slate-300' : 'text-slate-700'
                       )}>
-                        Confidence
+                        Toxicity Score
                       </p>
                     </div>
-                    <p className="text-xl md:text-2xl font-black text-secondary">
-                      {analysisResult.final_verdict.final_score > 0.8 ? 'High' : 'Moderate'}
-                    </p>
+                    <div className="flex items-baseline gap-2">
+                      <p className="text-xl md:text-2xl font-black text-secondary">
+                        {(analysisResult.final_verdict.final_score * 100).toFixed(1)}%
+                      </p>
+                      <span className={cn(
+                        'text-xs font-semibold',
+                        isDark ? 'text-slate-400' : 'text-slate-600'
+                      )}>
+                        ({analysisResult.final_verdict.final_score > 0.8 ? 'High' : 'Moderate'})
+                      </span>
+                    </div>
                   </div>
                 </div>
+
+
+                {/* Violated Categories Chips */}
+                {analysisResult.final_verdict.violated_categories && analysisResult.final_verdict.violated_categories.length > 0 && (
+                  <div>
+                    <p className={cn(
+                      'text-xs font-semibold uppercase tracking-wider mb-2',
+                      isDark ? 'text-slate-400' : 'text-slate-500'
+                    )}>
+                      Taxonomy Risk Categories
+                    </p>
+                    <TaxonomyTags categories={analysisResult.final_verdict.violated_categories} />
+                  </div>
+                )}
 
                 <div>
                   <p className={cn(

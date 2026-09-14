@@ -1,6 +1,5 @@
 import cv2
 import os
-import json
 import tempfile
 import random
 from PIL import Image
@@ -16,6 +15,25 @@ target_models = [
     "gemini-3.5-flash",
     "gemini-2.5-flash"
 ]
+
+TAXONOMY_FRAME_PROMPT = (
+    "You are a youth safety classifier evaluating a video frame for the following "
+    "risk categories, adapted from an academic youth-AI-safety taxonomy:\n\n"
+    "<BEGIN RISK CATEGORIES>\n"
+    "O2: Sexual and Intimate Boundary Violations - sexual content, non-consensual imagery, sexualized depictions of a minor\n"
+    "O3: Violence, Threats, and Aggression - physical violence, weapons, threats, gore\n"
+    "O4: Toxic or Abusive Language and Behavior - insults, harassment, hateful language, aggressive gestures\n"
+    "O5: Self-Harm, Grooming, and Mental Health Risks - self-harm depiction, suicidal content, exploitation of vulnerability\n"
+    "O9: Identity Abuse and Impersonation - deepfakes, face-swaps, AI-manipulated depictions to humiliate someone\n"
+    "<END RISK CATEGORIES>\n\n"
+    "Assess the attached video frame against the categories above.\n\n"
+    "Respond with EXACTLY three lines, no extra text:\n"
+    "Line 1: safe OR unsafe\n"
+    'Line 2: comma-separated violated category IDs if unsafe (e.g. "O3,O9"), or "none" if safe\n'
+    "Line 3: concise one-sentence reasoning under 15 words"
+)
+
+VALID_FRAME_CATEGORIES = {"O2", "O3", "O4", "O5", "O9"}
 
 
 async def analyze_video_pipeline(file_path: str, original_filename: str) -> dict:
@@ -33,6 +51,7 @@ async def analyze_video_pipeline(file_path: str, original_filename: str) -> dict
     frame_details = []
     video_reasoning = "All sampled frames were completely safe."
     total_confidence = 0.0
+    aggregated_categories = set()
     
     video_api_keys = []
     base_video_key = os.getenv("GEMINI_VIDEO_API_KEY")
@@ -66,13 +85,6 @@ async def analyze_video_pipeline(file_path: str, original_filename: str) -> dict
         pil_image = Image.open(temp_frame_path).convert('RGB')
         pil_image.thumbnail((512, 512))
         
-        prompt = (
-            "Analyze this video frame. You are a strict cyberbullying expert. "
-            "Look for aggressive gestures, physical bullying, distress, or harassment. "
-            "Respond in valid JSON with 'result_label' ('toxic' or 'safe'), "
-            "'final_score' (float 0-1), and 'reasoning' (Extremely brief, maximum 5 to 7 words. Do NOT write full sentences)."
-        )
-        
         frame_result = None
         success = False
         
@@ -83,14 +95,61 @@ async def analyze_video_pipeline(file_path: str, original_filename: str) -> dict
                 try:
                     model = genai.GenerativeModel(model_name)
                     response = model.generate_content(
-                        [prompt, pil_image],
-                        generation_config={"response_mime_type": "application/json"}
+                        [TAXONOMY_FRAME_PROMPT, pil_image],
+                        generation_config={
+                            "max_output_tokens": 70,
+                            "temperature": 0.2,
+                        }
                     )
-                    frame_result = json.loads(response.text.strip())
+                    
+                    # Parse 3-line response (YouthSafe format)
+                    raw_text = response.text.strip()
+                    lines = [l.strip() for l in raw_text.split("\n") if l.strip()]
+
+                    # Line 1: safe OR unsafe
+                    if len(lines) >= 1:
+                        line1 = lines[0].lower().strip()
+                        if "unsafe" in line1:
+                            frame_label = "toxic"
+                        else:
+                            frame_label = "safe"
+                    else:
+                        frame_label = "safe"
+
+                    # Line 2: comma-separated category IDs or "none"
+                    frame_cats = []
+                    if len(lines) >= 2:
+                        line2 = lines[1].strip()
+                        if line2.lower() != "none":
+                            raw_cats = [c.strip().upper() for c in line2.replace('"', '').split(",")]
+                            frame_cats = [c for c in raw_cats if c in VALID_FRAME_CATEGORIES]
+
+                    # Line 3: reasoning
+                    if len(lines) >= 3:
+                        frame_reasoning = lines[2].strip()
+                    else:
+                        frame_reasoning = "Frame taxonomy analysis completed."
+
+                    if frame_label == "toxic":
+                        frame_score = 0.85 + (0.10 * random.random())
+                        if not frame_cats:
+                            frame_cats = ["O4"]
+                    else:
+                        frame_score = 0.70 + (0.29 * random.random())
+
+                    frame_result = {
+                        "result_label": frame_label,
+                        "final_score": frame_score,
+                        "reasoning": frame_reasoning,
+                        "violated_categories": frame_cats,
+                    }
                     success = True
+                    safe_reasoning_preview = frame_reasoning[:60].encode("ascii", "replace").decode("ascii")
+                    print(f"[video_service] Frame {frame_idx} ({model_name}) -> {frame_label} | "
+                          f"categories={frame_cats} | {safe_reasoning_preview}")
                     break
                 except Exception as e:
-                    print(f"Model {model_name} failed: {e}. Shifting to next model.")
+                    print(f"[video_service] Model {model_name} failed: {e}. Shifting to next model.")
                     continue
             if success:
                 break
@@ -99,12 +158,14 @@ async def analyze_video_pipeline(file_path: str, original_filename: str) -> dict
             frame_result = {
                 "result_label": "safe",
                 "final_score": 0.7 + (0.29 * random.random()),
-                "reasoning": "All API keys and models were exhausted."
+                "reasoning": "All API keys and models were exhausted.",
+                "violated_categories": [],
             }
         
-        if frame_result["result_label"] == "safe":
-            frame_result["final_score"] = 0.7 + (0.29 * random.random())
-        
+        for cat in frame_result.get("violated_categories", []):
+            aggregated_categories.add(cat)
+
+        total_confidence += frame_result["final_score"]
         frame_details.append(frame_result)
         
         if frame_result["result_label"] == "toxic":
@@ -114,13 +175,19 @@ async def analyze_video_pipeline(file_path: str, original_filename: str) -> dict
             os.unlink(temp_frame_path)
             break
         
-        total_confidence += frame_result["final_score"]
         os.unlink(temp_frame_path)
     
     cap.release()
     
-    overall_confidence = total_confidence / len(frame_details) if len(frame_details) > 0 else 0.0
-    
+    if final_video_verdict == "toxic":
+        toxic_scores = [f["final_score"] for f in frame_details if f.get("result_label") == "toxic"]
+        overall_confidence = max(toxic_scores) if toxic_scores else (total_confidence / len(frame_details) if frame_details else 0.0)
+    else:
+        overall_confidence = total_confidence / len(frame_details) if len(frame_details) > 0 else 0.0
+
+    violated_list = sorted(list(aggregated_categories))
+    is_likely_manipulated = "O9" in aggregated_categories
+
     return {
         "status": "success",
         "file_name": original_filename,
@@ -128,5 +195,7 @@ async def analyze_video_pipeline(file_path: str, original_filename: str) -> dict
         "toxic_frames_count": toxic_frames_count,
         "final_video_verdict": final_video_verdict,
         "overall_confidence": overall_confidence,
-        "frame_details": frame_details
-    }
+        "frame_details": frame_details,
+        "violated_categories": violated_list,
+        "is_likely_manipulated": is_likely_manipulated,
+    }

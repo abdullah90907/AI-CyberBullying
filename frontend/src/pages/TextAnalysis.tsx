@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import ProtectedLayout from '../components/ProtectedLayout';
 import { FadeIn } from '../components/SectionWrapper';
 import { cn } from '../lib/utils';
+import { TaxonomyTags, ManipulationBadge } from '../components/TaxonomyTags';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
 
@@ -29,6 +30,8 @@ interface AnalysisResult {
   result_label: 'safe' | 'toxic';
   reasoning: string;
   confidence_score?: number;
+  violated_categories?: string[];
+  is_likely_manipulated?: boolean;
 }
 
 const TextAnalysis: React.FC<TextAnalysisProps> = ({ isDark, onLogout }) => {
@@ -90,6 +93,8 @@ const TextAnalysis: React.FC<TextAnalysisProps> = ({ isDark, onLogout }) => {
         date: new Date().toLocaleString(),
         result: data.result_label,
         score: data.toxicity_score * 100,
+        violated_categories: data.violated_categories || [],
+        is_likely_manipulated: data.is_likely_manipulated || false,
       };
       history.unshift(newItem);
       localStorage.setItem('omniguard_history', JSON.stringify(history));
@@ -247,12 +252,15 @@ const TextAnalysis: React.FC<TextAnalysisProps> = ({ isDark, onLogout }) => {
                   )}>
                     Verdict
                   </p>
-                  <p className={cn(
-                    'text-2xl font-bold',
-                    analysisResult.result_label === 'toxic' ? 'text-red-600' : 'text-green-600'
-                  )}>
-                    {analysisResult.result_label === 'toxic' ? 'Threat Detected' : 'Clean'}
-                  </p>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <p className={cn(
+                      'text-2xl font-bold',
+                      analysisResult.result_label === 'toxic' ? 'text-red-600' : 'text-green-600'
+                    )}>
+                      {analysisResult.result_label === 'toxic' ? 'Threat Detected' : 'Clean'}
+                    </p>
+                    <ManipulationBadge isLikelyManipulated={analysisResult.is_likely_manipulated} />
+                  </div>
                 </div>
                 
                 <div>
@@ -260,14 +268,17 @@ const TextAnalysis: React.FC<TextAnalysisProps> = ({ isDark, onLogout }) => {
                     'text-sm uppercase tracking-wide font-semibold mb-1',
                     isDark ? 'text-slate-400' : 'text-gray-500'
                   )}>
-                    Confidence Score
+                    Toxicity Score
                   </p>
-                  <p className={cn(
-                    'text-3xl font-extrabold',
-                    isDark ? 'text-white' : 'text-gray-800'
-                  )}>
-                    {(analysisResult.toxicity_score * 100).toFixed(1)}%
-                  </p>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <p className={cn(
+                      'text-3xl font-extrabold',
+                      isDark ? 'text-white' : 'text-gray-800'
+                    )}>
+                      {(analysisResult.toxicity_score * 100).toFixed(1)}%
+                    </p>
+                    <TaxonomyTags categories={analysisResult.violated_categories} />
+                  </div>
                 </div>
 
                 <div className={cn(

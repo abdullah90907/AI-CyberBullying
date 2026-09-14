@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import ProtectedLayout from '../components/ProtectedLayout';
 import { FadeIn } from '../components/SectionWrapper';
 import { cn } from '../lib/utils';
+import { TaxonomyTags, ManipulationBadge } from '../components/TaxonomyTags';
 
 interface HistoryItem {
   id: string;
@@ -19,6 +20,8 @@ interface HistoryItem {
   date: string;
   result: 'safe' | 'toxic';
   score: number;
+  violated_categories?: string[];
+  is_likely_manipulated?: boolean;
 }
 
 interface ReportsProps {
@@ -210,7 +213,9 @@ const Reports: React.FC<ReportsProps> = ({ isDark, onLogout }) => {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                    <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end flex-wrap">
+                      <ManipulationBadge isLikelyManipulated={item.is_likely_manipulated} />
+                      <TaxonomyTags categories={item.violated_categories} />
                       <div className={cn(
                         'px-4 py-2 rounded-xl font-bold text-sm',
                         item.result === 'toxic' 

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.database.config import engine
 from backend.app.models import models
-from backend.app.routes import health, detection, image_routes, video_routes, auth, news_routes
+from backend.app.routes import health, detection, image_routes, video_routes, auth, news_routes, chat_routes
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -32,6 +32,7 @@ app.include_router(auth.router)
 app.include_router(image_routes.router, prefix="/api/v1/detection/image", tags=["Image Detection"])
 app.include_router(video_routes.router, prefix="/api/v1/detection/video", tags=["Video Detection"])
 app.include_router(news_routes.router)
+app.include_router(chat_routes.router, prefix="/api/v1/chat", tags=["Chatbot"])
 
 
 @app.get("/")

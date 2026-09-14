@@ -13,6 +13,8 @@ class DetectionResponse(BaseModel):
     result_label: str
     confidence_score: float
     reasoning: str
+    violated_categories: list[str] = []  # Task 5: YouthSafe taxonomy category IDs
+    is_likely_manipulated: bool = False   # True if O9 or manipulation detected
 
     model_config = ConfigDict(from_attributes=True)
 

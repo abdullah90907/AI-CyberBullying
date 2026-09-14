@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import ProtectedLayout from '../components/ProtectedLayout';
 import { FadeIn } from '../components/SectionWrapper';
 import { cn } from '../lib/utils';
+import { TaxonomyTags, ManipulationBadge } from '../components/TaxonomyTags';
 
 interface VideoProcessingProps {
   isDark: boolean;
@@ -39,6 +40,8 @@ const VideoProcessing: React.FC<VideoProcessingProps> = ({ isDark, onLogout }) =
       final_score: number;
       reasoning: string;
     }>;
+    violated_categories?: string[];
+    is_likely_manipulated?: boolean;
   } | null>(null);
 
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,6 +87,8 @@ const VideoProcessing: React.FC<VideoProcessingProps> = ({ isDark, onLogout }) =
         date: new Date().toLocaleString(),
         result: data.final_video_verdict,
         score: data.overall_confidence * 100,
+        violated_categories: data.violated_categories || [],
+        is_likely_manipulated: data.is_likely_manipulated || false,
       };
       history.unshift(newItem);
       localStorage.setItem('omniguard_history', JSON.stringify(history));
@@ -278,12 +283,15 @@ const VideoProcessing: React.FC<VideoProcessingProps> = ({ isDark, onLogout }) =
                   ) : (
                     <CheckCircle2 className="w-12 h-12 md:w-16 md:h-16 text-green-500 mx-auto mb-4" />
                   )}
-                  <p className={cn(
-                    'text-lg md:text-xl font-bold uppercase tracking-wider mb-4',
-                    result.final_video_verdict === 'toxic' ? 'text-red-400' : 'text-green-400'
-                  )}>
-                    {result.final_video_verdict === 'toxic' ? 'Threat Detected' : 'Clean'}
-                  </p>
+                  <div className="flex items-center justify-center gap-3 flex-wrap mb-4">
+                    <p className={cn(
+                      'text-lg md:text-xl font-bold uppercase tracking-wider',
+                      result.final_video_verdict === 'toxic' ? 'text-red-400' : 'text-green-400'
+                    )}>
+                      {result.final_video_verdict === 'toxic' ? 'Threat Detected' : 'Clean'}
+                    </p>
+                    <ManipulationBadge isLikelyManipulated={result.is_likely_manipulated} />
+                  </div>
                   <div className="space-y-2">
                     <p className={cn(
                       'text-sm font-semibold',
@@ -304,12 +312,15 @@ const VideoProcessing: React.FC<VideoProcessingProps> = ({ isDark, onLogout }) =
                         <div className="absolute inset-0 bg-white/20 animate-pulse" />
                       </motion.div>
                     </div>
-                    <p className={cn(
-                      'text-3xl md:text-4xl font-black',
-                      result.final_video_verdict === 'toxic' ? 'text-red-500' : 'text-green-500'
-                    )}>
-                      {(result.overall_confidence * 100).toFixed(1)}%
-                    </p>
+                    <div className="flex items-center justify-center gap-3 flex-wrap">
+                      <p className={cn(
+                        'text-3xl md:text-4xl font-black',
+                        result.final_video_verdict === 'toxic' ? 'text-red-500' : 'text-green-500'
+                      )}>
+                        {(result.overall_confidence * 100).toFixed(1)}%
+                      </p>
+                      <TaxonomyTags categories={result.violated_categories} />
+                    </div>
                   </div>
                 </div>
 
