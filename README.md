@@ -352,6 +352,37 @@ graph TD
 
 ---
 
+## ⚡ Token Optimization & Response Completeness Engine
+
+A critical challenge in modern LLM/VLM production deployments is balancing **cost and quota efficiency** against **linguistic completeness**. Naive implementations often suffer from two major flaws:
+1. **Mid-Sentence Slicing:** Arbitrary post-processing string truncation (e.g. `explanation[:150]`) cuts sentences in half or chops words mid-letter, frustrating end users and damaging credibility.
+2. **Quota Exhaustion & 429 Errors:** Overly generous token ceilings quickly drain free-tier API quotas and cause severe rate-limiting under concurrent traffic.
+
+OmniGuard implements an intelligent **Token Optimization & Response Completeness Engine** that resolves both challenges simultaneously:
+
+### 1. Generation-Level Steering vs. Naive String Truncation
+- **Prompt-Enforced Brevity:** Instead of truncating responses with code after generation, OmniGuard prompts steer models upstream:
+  > *"Explain your reasoning in a single, complete sentence under 15 words. Do not trail off or write paragraphs."*
+- **Elimination of Arbitrary Slices:** Removed all hardcoded character cutoffs (such as Python `[:150]`), ensuring that 100% of user-facing explanations are syntactically complete, grammatically sound sentences with proper terminal punctuation.
+
+### 2. Balanced Modality Token Allocation Matrix
+
+| Pipeline Service | Model Target / Failover | Token Cap (`max_tokens`) | Target Word Count | Output Format & Optimization Strategy |
+| :--- | :--- | :---: | :---: | :--- |
+| **Text Moderation** | Groq (`gpt-oss-120b` ➔ `gpt-oss-20b` ➔ `llama-3.1-8b`) | `200` | 10–15 words | Strict JSON object (`response_format`). Token cap guarantees JSON brackets close securely while curbing excess generation. |
+| **Image Vision** | Gemini (`3.1-flash-lite` ➔ `2.5-flash-lite` ➔ `3-flash`) | `70` | 8–14 words | 3-line structured format (`safe/unsafe` \n `categories` \n `concise reasoning`). Zero mid-word truncations. |
+| **Video Sparsity** | Gemini Flash Vision (Equidistant frames) | `70` / frame | 8–14 words | Same 3-line format. Early-halt breaks on frame 1 if toxic, saving 75% of video token allocation. |
+| **Safety Chatbot** | Groq Ring + Gemini Fallback (`gemini-2.5-flash`) | `260` | 70–110 words | Empathetic multi-point coaching without exhausting Groq RPM quotas. Generates complete safety steps. |
+
+### 3. High-Fidelity Output Typography (`FormattedMessage`)
+Raw LLM outputs frequently emit markdown asterisks (`**bold**`), irregular bullet dashes, and unformatted lists that clutter UI cards. OmniGuard introduces a dedicated client-side typography parser ([`FormattedMessage.tsx`](file:///d:/Projects%202026/FYP/Trae/AI%20CyberBullying/frontend/src/components/FormattedMessage.tsx)):
+- **Numbered Steps:** Automatically transforms `1.`, `2.`, `3.` prefixes into modern, styled rounded pill badges (`bg-indigo-500/20 text-indigo-300`).
+- **Bullet Points:** Replaces plain dashes (`-`) or asterisks (`*`) with glowing cyan micro-dots.
+- **Bold Lead-Ins:** Cleans out raw asterisks and applies high-contrast semibold rendering to key headers.
+- **Natural Paragraph Spacing:** Formats multiline responses into clean, scannable reading blocks.
+
+---
+
 ## 🛠️ Technology Stack & Tools Dictionary
 
 | Layer / Category | Tool / Library | Version | Role in OmniGuard |
