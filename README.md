@@ -167,7 +167,29 @@ graph TD
     AuthRoute -- "Hash Check & Verify" --> SQLDB
     AuthRoute -- "Auth Status & User Metadata" --> UserClient
 
-    UserClient -- "T### 1. Text Cyberbullying & Harassment Analysis
+    UserClient -- "Text Moderation Scan" --> TextRoute
+    TextRoute -- "Analyze Text & Taxonomy" --> ToxicBERT & GroqLLM & TaxonomyEngine
+
+    UserClient -- "Image Upload & OCR" --> ImageRoute
+    ImageRoute -- "OCR Text & Zero-Shot Vision" --> EasyOCREngine & CLIPVision & GeminiVision & TaxonomyEngine
+
+    UserClient -- "Video Upload & Sparsity" --> VideoRoute
+    VideoRoute -- "Equidistant Frames" --> OpenCVFrame
+    OpenCVFrame -- "Frame Moderation & Early Halt" --> GeminiVision & TaxonomyEngine
+
+    UserClient -- "Safety Chat Query" --> ChatRoute
+    ChatRoute -- "Empathetic Coaching & Knowledge" --> GroqLLM & GeminiVision
+    ChatRoute -- "Store / Fetch History" --> SQLDB
+
+    UserClient -- "News Query" --> NewsRoute
+    NewsRoute -- "Fetch External News & Cache" --> SQLDB
+```
+
+---
+
+## 🔍 In-Depth Feature Breakdown & Tools Used
+
+### 1. Text Cyberbullying & Harassment Analysis
 
 - **What it does:** Scans any user-provided textual string, message, tweet, or forum comment for bullying, personal attacks, slurs, profanity, and targeted harassment, mapping infractions to the academic **YouthSafe 11-Category Taxonomy (O1–O11)**.
 - **Frontend Layer:**
@@ -253,22 +275,6 @@ graph TD
   - **Multi-Model Failover:** Powered by Groq LLMs (`openai/gpt-oss-120b` ➔ `openai/gpt-oss-20b` ➔ `llama-3.1-8b-instant`) with automatic fallback to Google Gemini (`gemini-2.5-flash`).
   - **Empathetic Coaching Prompt:** Instructed to validate feelings, offer 2–3 immediate safety actions (saving evidence, blocking offenders, notifying trusted adults/counselors), and explain OmniGuard moderation tools.
   - **Balanced Token Consumption:** Constrained to **70–110 words** (`max_tokens=260`, `temperature=0.5`) with strict completion rules, preventing cut-offs while preserving API token quotas.
-
----ely breaks processing**, frees memory handles, deletes temporary files, and returns the toxic verdict, saving up to 75% API compute time.
-  - **Disk Hygiene:** Frames are processed in secure temporary files using Python `tempfile` and unlinked immediately after inference.
-
----
-
-### 4. AI Cyber Safety & Mental Health Support Chatbot
-
-- **What it does:** Provides 24/7 empathetic support, guidance, and educational assistance to users who are experiencing online harassment, anxiety, or seeking platform guidance.
-- **Frontend Layer:**
-  - **Component:** `frontend/src/pages/Chatbot.tsx`
-  - **Tools Used:** React state management, auto-scrolling message stream (`useRef`, `scrollIntoView`), Lucide icons (`Bot`, `User`, `Send`), Framer Motion transitions.
-- **Capabilities & Intelligence:**
-  - **Empathetic Emotional Support:** Detects distress signals and emotional vulnerability keywords (`sad`, `upset`, `depressed`, `anxious`, `scared`, `hurt`, `victim`) and responds with compassionate, non-judgmental guidance and recommendations to connect with trusted adults or professionals.
-  - **Platform Knowledge Assistant:** Answers user questions regarding how Toxic-BERT, Groq, CLIP, EasyOCR, and Gemini work across the OmniGuard ecosystem.
-  - **Safety Action Advice:** Provides concrete tips on blocking offenders, preserving evidence, and reporting cyberbullying.
 
 ---
 
