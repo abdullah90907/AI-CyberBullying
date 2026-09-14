@@ -8,6 +8,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Capacitor](https://img.shields.io/badge/Capacitor-Android%208.3-119EFF?style=for-the-badge&logo=capacitor&logoColor=white)](https://capacitorjs.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Academic Taxonomy](https://img.shields.io/badge/Taxonomy-YouthSafe%20O1--O11-8A2BE2?style=for-the-badge&logo=academia&logoColor=white)](https://arxiv.org/)
 
 ---
 
@@ -24,7 +25,7 @@
 
 **OmniGuard** is a state-of-the-art, cross-platform artificial intelligence content moderation system engineered to combat online harassment, cyberbullying, hate speech, and toxic digital behavior across **text, images, and video streams**.
 
-Modern social media platforms, educational forums, and messaging apps face unprecedented moderation challenges where toxic behavior takes multiple forms—from direct verbal abuse to offensive image memes and aggressive video content. OmniGuard solves this through a **hybrid AI pipeline**: combining ultra-fast local neural networks for instantaneous zero-latency inference with resilient, multi-tiered Large Language Model (LLM) and Vision-Language Model (VLM) fallbacks.
+Modern social media platforms, educational forums, and messaging apps face unprecedented moderation challenges where toxic behavior takes multiple forms—from direct verbal abuse to offensive image memes, deepfake manipulation, and aggressive video content. OmniGuard solves this through a **hybrid AI pipeline**: combining ultra-fast local neural networks for instantaneous zero-latency inference with resilient, multi-tiered Large Language Model (LLM) and Vision-Language Model (VLM) fallbacks, strictly grounded in the **academic YouthSafe AI-safety taxonomy (O1–O11)**.
 
 The project encompasses a **full-stack progressive web application (PWA)** and a **native Android mobile application** powered by Capacitor, communicating with an asynchronous, high-throughput **FastAPI** backend server backed by an optimized relational database.
 
@@ -34,6 +35,7 @@ The project encompasses a **full-stack progressive web application (PWA)** and a
 
 - [👨‍💻 Developed By](#-developed-by)
 - [🌟 Executive Summary & Vision](#-executive-summary--vision)
+- [🎯 Tier-1 Academic Upgrade: YouthSafe AI-Safety Taxonomy (O1–O11)](#-tier-1-academic-upgrade-youthsafe-ai-safety-taxonomy-o1o11)
 - [🏛️ System Architecture](#️-system-architecture)
   - [High-Level 3-Tier Architecture](#high-level-3-tier-architecture)
   - [Data Flow Diagram (Level 0 & Level 1)](#data-flow-diagram-level-0--level-1)
@@ -41,12 +43,13 @@ The project encompasses a **full-stack progressive web application (PWA)** and a
   - [1. Text Cyberbullying & Harassment Analysis](#1-text-cyberbullying--harassment-analysis)
   - [2. Multimodal Image Moderation & OCR Analysis](#2-multimodal-image-moderation--ocr-analysis)
   - [3. High-Throughput Video Frame Sparsity Processing](#3-high-throughput-video-frame-sparsity-processing)
-  - [4. AI Cyber Safety & Mental Health Support Chatbot](#4-ai-cyber-safety--mental-health-support-chatbot)
+  - [4. Full-Stack AI Safety Assistant Chatbot](#4-full-stack-ai-safety-assistant-chatbot)
   - [5. Secure Authentication & Profile Management](#5-secure-authentication--profile-management)
   - [6. Real-Time Analytics Dashboard & Reports Center](#6-real-time-analytics-dashboard--reports-center)
   - [7. Live Cyberbullying & Digital Safety News Feed](#7-live-cyberbullying--digital-safety-news-feed)
   - [8. Public Marketing & Educational Suite](#8-public-marketing--educational-suite)
   - [9. Native Cross-Platform Android Mobile Application](#9-native-cross-platform-android-mobile-application)
+- [⚡ Token Optimization & Response Completeness Engine](#-token-optimization--response-completeness-engine)
 - [🛠️ Technology Stack & Tools Dictionary](#️-technology-stack--tools-dictionary)
 - [🚀 Getting Started & Installation Guide](#-getting-started--installation-guide)
   - [Prerequisites](#prerequisites)
@@ -58,6 +61,35 @@ The project encompasses a **full-stack progressive web application (PWA)** and a
 - [📱 Mobile Development & Local Network Bypass](#-mobile-development--local-network-bypass)
 - [🛡️ Security, Privacy & Optimization Strategies](#️-security-privacy--optimization-strategies)
 - [📬 Contact & Connect](#-contact--connect)
+
+---
+
+## 🎯 Tier-1 Academic Upgrade: YouthSafe AI-Safety Taxonomy (O1–O11)
+
+In conventional systems, content moderation is treated as a crude binary classification ("toxic" vs. "safe"). This fails to capture critical nuances such as psychological grooming, subtle coercion, deepfake humiliation, or intimate boundary violations. 
+
+To bridge the gap with cutting-edge academic AI safety research, **OmniGuard has been upgraded to implement the academic YouthSafe AI-Safety Taxonomy**, classifying all incoming multimodal inputs against **11 specialized risk categories**:
+
+### 📊 The 11 YouthSafe Risk Categories
+
+| Category ID | Risk Category Name | Scope & Violation Definition | Modality Coverage |
+| :---: | :--- | :--- | :---: |
+| **O1** | Bias, Stereotyping, and Discrimination | Prejudiced slurs, systemic bias, hate speech against protected groups | Text |
+| **O2** | Sexual and Intimate Boundary Violations | Non-consensual imagery, sexual harassment, inappropriate adult solicitation of minors | Text, Image, Video |
+| **O3** | Violence, Threats, and Aggression | Physical violence, weapons, gore, direct threats of bodily harm | Text, Image, Video |
+| **O4** | Toxic or Abusive Language & Behavior | Targeted insults, harassment, abusive gestures, cyberbullying | Text, Image, Video |
+| **O5** | Self-Harm, Grooming & Mental Health | Depiction/encouragement of self-harm, suicidal ideation, exploitative grooming | Text, Image, Video |
+| **O6** | Privacy and Data Exploitation | Doxing, unconsented release of personal contact information | Text |
+| **O7** | Misinformation & Inappropriate Advice | Dangerous medical or emotional advice, harmful hallucinations | Text |
+| **O8** | User Misuse of Generative AI | Utilizing generative tools to orchestrate targeted abuse | Text |
+| **O9** | Identity Abuse & Deepfake Manipulation | AI face-swaps, deepfakes, manipulated media used to demean or impersonate someone | Text, Image, Video |
+| **O10** | Undue Influence & Coercive Manipulation | Psychological manipulation, blackmail, coercion, social exclusion threats | Text |
+| **O11** | Developmental, Social & Learning Harm | Content actively sabotaging academic, cognitive, or social development | Text |
+
+### 🔍 Deepfake & AI Manipulation Detection Engine
+- **Zero-Shot CLIP Classification:** Visual classification prompts actively score images against manipulated media and deepfake indicators.
+- **Unified Manipulation Flag (`is_likely_manipulated`):** Automatically triggered whenever local manipulation score exceeds `0.5` OR when the academic taxonomy engine flags **`O9: Identity Abuse & Deepfake Manipulation`**.
+- **Visual Alert Badge:** Renders a high-visibility badge (**`⚠ Possible AI manipulation`**) across user scan cards.
 
 ---
 
@@ -84,8 +116,11 @@ The project encompasses a **full-stack progressive web application (PWA)** and a
 │    ├── Local Deep Learning: Unitary Toxic-BERT (NLP) + OpenAI CLIP-ViT-B/32 (Vision)   │
 │    ├── Text-in-Image OCR: EasyOCR Python Engine                                        │
 │    ├── Video Analytics: OpenCV-Python (Sparse Frame Extraction)                        │
-│    ├── High-Speed Text Inference: Groq Llama-3.3-70B-Versatile Engine                   │
-│    └── Multimodal Vision Fallback: Google Gemini API (Multi-Model & 20+ Key Failover)   │
+│    ├── High-Speed Text & Chat Inference: Groq API with Model Failover Ring              │
+│    │   (openai/gpt-oss-120b ➔ openai/gpt-oss-20b ➔ llama-3.1-8b-instant)               │
+│    ├── YouthSafe Taxonomy Evaluator: Academic 11-Category Mapping (O1 to O11)          │
+│    ├── Multimodal Vision Fallback: Google Gemini API (Multi-Model & 20+ Key Failover)   │
+│    └── Full-Stack Conversational AI: OmniGuard Safety Chatbot with SQLite Memory        │
 └────────────────────────────────────────────┬────────────────────────────────────────────┘
                                              │
                                              │ SQLAlchemy 2.0 ORM Transactions
@@ -109,6 +144,7 @@ graph TD
         TextRoute["/api/v1/detection/text (detection.py)"]
         ImageRoute["/api/v1/detection/image (image_routes.py)"]
         VideoRoute["/api/v1/detection/video (video_routes.py)"]
+        ChatRoute["/api/v1/chat/* (chat_routes.py)"]
         NewsRoute["/api/v1/news (news_routes.py)"]
     end
 
@@ -116,9 +152,10 @@ graph TD
         ToxicBERT["Hugging Face Toxic-BERT"]
         EasyOCREngine["EasyOCR Engine"]
         CLIPVision["OpenAI CLIP ViT-B/32"]
-        GroqLLM["Groq Llama-3.3-70B API"]
+        GroqLLM["Groq LLM Engine (GPT-OSS / Llama)"]
         GeminiVision["Google Gemini Flash Vision API"]
         OpenCVFrame["OpenCV Frame Sampling Engine"]
+        TaxonomyEngine["YouthSafe Academic Taxonomy (O1-O11)"]
     end
 
     subgraph Data_Stores ["Data Stores"]
@@ -130,67 +167,47 @@ graph TD
     AuthRoute -- "Hash Check & Verify" --> SQLDB
     AuthRoute -- "Auth Status & User Metadata" --> UserClient
 
-    UserClient -- "Text Input" --> TextRoute
-    TextRoute -- "Analyze Sentiment & Slurs" --> ToxicBERT & GroqLLM
-    TextRoute -- "Log Verdict" --> SQLDB
-    TextRoute -- "Toxicity Score & Reasoning" --> UserClient
+    UserClient -- "T### 1. Text Cyberbullying & Harassment Analysis
 
-    UserClient -- "Image File Upload" --> ImageRoute
-    ImageRoute -- "Extract Embedded Text" --> EasyOCREngine
-    ImageRoute -- "Visual Threat Scoring" --> CLIPVision
-    ImageRoute -- "Ambiguous Multimodal Failover" --> GeminiVision
-    ImageRoute -- "Log Detection" --> SQLDB
-    ImageRoute -- "Verdict & Breakdown Scores" --> UserClient
-
-    UserClient -- "Video File Upload" --> VideoRoute
-    VideoRoute -- "Sample 4 Equidistant Frames" --> OpenCVFrame
-    OpenCVFrame -- "Parallel Threat Check" --> GeminiVision
-    VideoRoute -- "Early-Halt on 1st Violation" --> VideoRoute
-    VideoRoute -- "Log Detection" --> SQLDB
-    VideoRoute -- "Frame Breakdown & Final Verdict" --> UserClient
-
-    UserClient -- "Save Recent Record" --> LocalCache
-```
-
----
-
-## 🔍 In-Depth Feature Breakdown & Tools Used
-
-### 1. Text Cyberbullying & Harassment Analysis
-
-- **What it does:** Scans any user-provided textual string, message, tweet, or forum comment for bullying, personal attacks, slurs, profanity, and targeted harassment.
+- **What it does:** Scans any user-provided textual string, message, tweet, or forum comment for bullying, personal attacks, slurs, profanity, and targeted harassment, mapping infractions to the academic **YouthSafe 11-Category Taxonomy (O1–O11)**.
 - **Frontend Layer:**
   - **Component:** `frontend/src/pages/TextAnalysis.tsx`
   - **Tools Used:** React 18, Tailwind CSS, Framer Motion (`FadeIn`, spring cards), Lucide React (`AlertTriangle`, `CheckCircle`, `Copy`, `Sparkles`).
-  - **Interactive Features:** Real-time character count, 4 instant pre-filled testing scenarios (Safe, Mild, Severe Harassment, Ambiguous), loading state indicators, confidence bar visualization, one-click verdict copy.
+  - **Interactive Features:** Real-time character count, 4 instant pre-filled testing scenarios (Safe, Mild, Severe Harassment, Ambiguous), loading state indicators, confidence bar visualization, color-coded `TaxonomyTags` chips, one-click verdict copy.
 - **Backend Layer:**
   - **Endpoint:** `POST /api/v1/detection/text`
   - **Handler:** `backend/app/routes/detection.py`
   - **Pipeline Service:** `backend/app/services/text_service.py`
+  - **Schema:** `DetectionResponse` (`status`, `toxicity_score`, `result_label`, `confidence_score`, `reasoning`, `violated_categories`, `is_likely_manipulated`)
 - **AI & Tools Architecture:**
-  - **Primary Engine:** `groq` Python SDK powering `llama-3.3-70b-versatile` with strict JSON mode enforcement (`response_format={"type": "json_object"}`).
+  - **Primary Engine:** `groq` Python SDK with intelligent model candidate failover ring:
+    `openai/gpt-oss-120b` ➔ `openai/gpt-oss-20b` ➔ `llama-3.1-8b-instant`.
+  - **Academic Taxonomy Prompting:** Formats text inside an 11-category classification template enforcing strict JSON output (`response_format={"type": "json_object"}`).
+  - **Token Optimization:** Uses concise reasoning guidelines (under 15 words) and constrained `max_tokens=200` to prevent token exhaustion and eliminate truncation.
   - **Local Alternative:** Hugging Face `transformers` pipeline executing `unitary/toxic-bert`.
   - **Normalization Matrix:** High-safety text scores are normalized between 70% and 99% confidence to prevent confusing low decimal values for safe users.
-  - **Database Persistence:** Automatically records scan metadata into the SQLite `detections` table using SQLAlchemy.
+  - **Database Persistence:** Automatically records scan metadata and category violations into the SQLite `detections` table using SQLAlchemy.
 
 ---
 
 ### 2. Multimodal Image Moderation & OCR Analysis
 
-- **What it does:** Analyzes static visual media (memes, screenshots, profile pictures, social media cards) to detect graphical violence, hate symbols, and cyberbullying text embedded inside images.
+- **What it does:** Analyzes static visual media (memes, screenshots, profile pictures, social media cards) to detect graphical violence, hate symbols, cyberbullying text embedded inside images, and **AI-manipulated deepfakes / face-swaps**.
 - **Frontend Layer:**
   - **Component:** `frontend/src/pages/ImageDetection.tsx`
-  - **Tools Used:** Drag-and-drop file uploader (`react-dropzone` patterns), image thumbnail rendering, badge indicators, score split view.
-  - **Visual Breakdown:** Dissects results into **Extracted Text**, **Text Toxicity Score (%)**, **Vision Toxicity Score (%)**, and **Final Unified Verdict**.
+  - **Tools Used:** Drag-and-drop file uploader (`react-dropzone` patterns), image thumbnail rendering, `TaxonomyTags` risk chips, `ManipulationBadge` ("⚠ Possible AI manipulation"), score split view.
+  - **Visual Breakdown:** Dissects results into **Extracted Text**, **Text Toxicity Score (%)**, **Vision Toxicity Score (%)**, **Taxonomy Risk Categories**, and **Final Unified Verdict**.
 - **Backend Layer:**
   - **Endpoint:** `POST /api/v1/detection/image` (`multipart/form-data`)
   - **Handler:** `backend/app/routes/image_routes.py`
   - **Pipeline Service:** `backend/app/services/image_service.py`
 - **AI & Tools Architecture:**
   - **OCR Extractor:** `easyocr` (Optical Character Recognition) extracts textual inscriptions, slang, and offensive phrases from the image canvas.
-  - **Zero-Shot Visual Classifier:** `transformers` pipeline running `openai/clip-vit-base-patch32` classifying the image against safety vs. harassment candidate descriptions.
+  - **Zero-Shot Visual Classifier:** `transformers` pipeline running `openai/clip-vit-base-patch32` evaluating candidate descriptions across safety, funny meme, harassment, physical violence, **AI manipulation/deepfakes**, and **self-harm**.
   - **Multimodal VLM Failover:** Google Gemini Vision (`google-generativeai` / `google-genai`) scaling across target models:
     `gemini-3.1-flash-lite` ➔ `gemini-2.5-flash-lite` ➔ `gemini-3-flash` ➔ `gemini-3.5-flash` ➔ `gemini-2.5-flash`.
+  - **Structured Taxonomy 3-Line Prompt:** Strictly parses line 1 (`safe`/`unsafe`), line 2 (comma-separated category IDs e.g. `O3,O9`), and line 3 (concise reasoning).
+  - **Token Optimization & Sentence Completeness:** Employs `max_output_tokens=70` with zero mid-sentence character truncations, producing 100% complete, readable reasoning.
   - **Resilience Engine:** Implements a dynamic failover ring of **up to 21 Gemini API keys** (`GEMINI_API_KEY`, `GEMINI_API_KEY_1`...`GEMINI_API_KEY_20`) preventing 429 quota exhaustion.
   - **Pillow (PIL):** Downsamples images to $512 \times 512$ RGB thumbnails to minimize token usage and accelerate API dispatch.
 
@@ -198,18 +215,46 @@ graph TD
 
 ### 3. High-Throughput Video Frame Sparsity Processing
 
-- **What it does:** Moderates recorded or uploaded video clips (MP4, WebM, AVI up to 100MB) without the prohibitive cost of analyzing every single frame.
+- **What it does:** Moderates recorded or uploaded video clips (MP4, WebM, AVI up to 100MB) without the prohibitive cost of analyzing every single frame, categorizing violations against the YouthSafe taxonomy.
 - **Frontend Layer:**
   - **Component:** `frontend/src/pages/VideoProcessing.tsx`
-  - **Tools Used:** HTML5 custom video player preview, frame grid cards, early-termination status alerts, total vs. toxic frames inspected counter.
+  - **Tools Used:** HTML5 custom video player preview, frame grid cards, early-termination status alerts, total vs. toxic frames inspected counter, `TaxonomyTags` chips.
 - **Backend Layer:**
   - **Endpoint:** `POST /api/v1/detection/video` (`multipart/form-data`)
   - **Handler:** `backend/app/routes/video_routes.py`
   - **Pipeline Service:** `backend/app/services/video_service.py`
+  - **Schema:** `VideoDetectionResponse` (`status`, `file_name`, `total_frames_analyzed`, `toxic_frames_count`, `final_video_verdict`, `overall_confidence`, `frame_details`, `violated_categories`, `is_likely_manipulated`)
 - **AI & Tools Architecture:**
   - **OpenCV (`cv2.VideoCapture`):** Reads video containers, extracts metadata (frame rate, duration, total frame count).
   - **Sparse Frame Sampling:** Extracts precisely 4 representative frames at equidistant intervals (**20%**, **40%**, **60%**, and **80%** duration marks).
+  - **Frame-Level Taxonomy Checking:** Each sampled frame is evaluated via Gemini Vision with the YouthSafe 3-line taxonomy prompt (`max_output_tokens=70`).
+  - **Violation Aggregation:** Deduplicates categories flagged across all sampled frames into top-level `violated_categories` and sets `is_likely_manipulated` if `O9` is detected.
+  - **Accurate Confidence Computation:** Toxic verdict confidence accurately reflects the toxic frame's score (e.g. 93%) rather than zeroing out.
   - **Early-Halt Optimization:** If any sampled frame is flagged as toxic by Gemini Vision, the pipeline **immediately breaks processing**, frees memory handles, deletes temporary files, and returns the toxic verdict, saving up to 75% API compute time.
+  - **Disk Hygiene:** Frames are processed in secure temporary files using Python `tempfile` and unlinked immediately after inference.
+
+---
+
+### 4. Full-Stack AI Safety Assistant Chatbot
+
+- **What it does:** Provides a 24/7 empathetic, real-time AI conversational assistant powered by Large Language Models to help users understand cyberbullying, cope with online harassment, practice digital wellness, and navigate OmniGuard's detection tools.
+- **Frontend Layer:**
+  - **Component:** `frontend/src/pages/Chatbot.tsx`
+  - **Custom Typography Renderer:** `frontend/src/components/FormattedMessage.tsx` renders rich-text elements with bold styling, styled numbered step badge pills, bullet dots, and subheadings—eliminating raw asterisks (`**`) or messy markdown artifacts.
+  - **Interactive Features:** Suggested prompt buttons (*"What should I do if someone is cyberbullying me?"*, *"How does Image Detection identify harmful memes?"*), live animated typing indicator, auto-scrolling message view, and graceful offline fallback.
+- **Backend Layer:**
+  - **Endpoints:**
+    - `POST /api/v1/chat/` (Send message with multi-turn history)
+    - `GET /api/v1/chat/history/{user_id}` (Retrieve past user conversations)
+  - **Handler:** `backend/app/routes/chat_routes.py`
+  - **Pipeline Service:** `backend/app/services/chat_service.py`
+  - **Database Model:** `backend/app/models/models.py` (`ChatHistory` table with `user_id`, `message`, `response`, `created_at`)
+- **AI & Intelligence Architecture:**
+  - **Multi-Model Failover:** Powered by Groq LLMs (`openai/gpt-oss-120b` ➔ `openai/gpt-oss-20b` ➔ `llama-3.1-8b-instant`) with automatic fallback to Google Gemini (`gemini-2.5-flash`).
+  - **Empathetic Coaching Prompt:** Instructed to validate feelings, offer 2–3 immediate safety actions (saving evidence, blocking offenders, notifying trusted adults/counselors), and explain OmniGuard moderation tools.
+  - **Balanced Token Consumption:** Constrained to **70–110 words** (`max_tokens=260`, `temperature=0.5`) with strict completion rules, preventing cut-offs while preserving API token quotas.
+
+---ely breaks processing**, frees memory handles, deletes temporary files, and returns the toxic verdict, saving up to 75% API compute time.
   - **Disk Hygiene:** Frames are processed in secure temporary files using Python `tempfile` and unlinked immediately after inference.
 
 ---
