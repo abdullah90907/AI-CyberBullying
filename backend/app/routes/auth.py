@@ -98,6 +98,46 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         )
 
 
+@router.post("/demo-login", response_model=AuthResponse)
+def demo_login(db: Session = Depends(get_db)):
+    try:
+        DEMO_EMAIL = "demo@omniguard.ai"
+        DEMO_USERNAME = "Demo Investigator"
+        DEMO_PASSWORD = "demo123"
+
+        user = db.query(User).filter(User.email == DEMO_EMAIL).first()
+        if not user:
+            user = User(
+                username=DEMO_USERNAME,
+                email=DEMO_EMAIL,
+                password_hash=get_password_hash(DEMO_PASSWORD),
+                created_at=datetime.utcnow()
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+
+        return AuthResponse(
+            status="success",
+            message="Demo login successful",
+            user=UserResponse(
+                id=user.id,
+                username=user.username,
+                email=user.email,
+                created_at=user.created_at
+            )
+        )
+    except Exception as e:
+        import traceback
+        print("Demo login error:", str(e))
+        print("Traceback:", traceback.format_exc())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+
+
 @router.get("/user/{user_id}", response_model=UserResponse)
 def get_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()

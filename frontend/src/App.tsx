@@ -140,6 +140,70 @@ function AppContent() {
     }
   };
 
+  const demoLogin = async (): Promise<{ success: boolean; error?: string }> => {
+    try {
+      console.log('Attempting demo login at:', `${API_BASE}auth/demo-login`);
+      try {
+        const response = await fetch(`${API_BASE}auth/demo-login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const backendUser = data.user as BackendUser;
+          const user: UserData = {
+            id: backendUser.id,
+            email: backendUser.email,
+            name: backendUser.username || 'Demo Investigator',
+            stats: {
+              totalScans: 142,
+              threatsBlocked: 39,
+              accuracy: 99.2,
+              reportsGenerated: 18,
+            },
+            history: [],
+          };
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+          localStorage.setItem('omniguard_user', JSON.stringify(user));
+          return { success: true };
+        }
+      } catch (endpointErr) {
+        console.warn('Demo login endpoint request failed, falling back:', endpointErr);
+      }
+
+      // Fallback to standard login with pre-seeded demo credentials
+      const standardResult = await login('demo@omniguard.ai', 'demo123');
+      if (standardResult.success) {
+        return { success: true };
+      }
+
+      // Final resilient fallback: local demo session
+      const fallbackUser: UserData = {
+        id: 12,
+        email: 'demo@omniguard.ai',
+        name: 'Demo Investigator',
+        stats: {
+          totalScans: 142,
+          threatsBlocked: 39,
+          accuracy: 99.2,
+          reportsGenerated: 18,
+        },
+        history: [],
+      };
+      setCurrentUser(fallbackUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('omniguard_user', JSON.stringify(fallbackUser));
+      return { success: true };
+    } catch (error) {
+      console.error('Demo login failed:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Demo login error' };
+    }
+  };
+
   const signup = async (name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
       console.log('Sending signup to:', `${API_BASE}auth/signup`);
@@ -218,14 +282,39 @@ function AppContent() {
         ? 'bg-gradient-to-b from-darker via-dark to-darker text-white' 
         : 'bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900'
     }`}>
-      {!isPrivatePage && <Navbar isDark={isDark} toggleTheme={toggleTheme} />}
+      {!isPrivatePage && (
+        <Navbar 
+          isDark={isDark} 
+          toggleTheme={toggleTheme} 
+          isAuthenticated={isAuthenticated}
+          onDemoLogin={demoLogin}
+        />
+      )}
       <Routes>
-        <Route path="/" element={<Home isDark={isDark} />} />
+        <Route 
+          path="/" 
+          element={
+            <Home 
+              isDark={isDark} 
+              onDemoLogin={demoLogin}
+              isAuthenticatedUser={isAuthenticated}
+            />
+          } 
+        />
         <Route path="/features" element={<Features isDark={isDark} />} />
         <Route path="/impact" element={<Impact isDark={isDark} />} />
         <Route path="/mission" element={<Mission isDark={isDark} />} />
         <Route path="/news" element={<News isDark={isDark} />} />
-        <Route path="/login" element={<Login isDark={isDark} onLogin={login} />} />
+        <Route 
+          path="/login" 
+          element={
+            <Login 
+              isDark={isDark} 
+              onLogin={login} 
+              onDemoLogin={demoLogin}
+            />
+          } 
+        />
         <Route path="/signup" element={<Signup isDark={isDark} onSignup={signup} />} />
         <Route path="/dashboard" element={
           <ProtectedRoute>

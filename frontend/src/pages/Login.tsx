@@ -1,21 +1,52 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Mail, Lock, ArrowRight, Eye, EyeOff, ChevronLeft } from 'lucide-react';
+import { Shield, Mail, Lock, ArrowRight, Eye, EyeOff, ChevronLeft, Zap, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
 interface LoginProps {
   isDark: boolean;
   onLogin: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  onDemoLogin?: () => Promise<{ success: boolean; error?: string }>;
 }
 
-const Login: React.FC<LoginProps> = ({ isDark, onLogin }) => {
+const Login: React.FC<LoginProps> = ({ isDark, onLogin, onDemoLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleDemoLogin = async () => {
+    setError('');
+    setDemoLoading(true);
+    try {
+      let result;
+      if (onDemoLogin) {
+        result = await onDemoLogin();
+      } else {
+        result = await onLogin('demo@omniguard.ai', 'demo123');
+      }
+
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Demo login failed');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Demo login error');
+    } finally {
+      setDemoLoading(false);
+    }
+  };
+
+  const handleFillDemoCredentials = () => {
+    setEmail('demo@omniguard.ai');
+    setPassword('demo123');
+    setError('');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,7 +254,7 @@ const Login: React.FC<LoginProps> = ({ isDark, onLogin }) => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="mb-10">
+              <div className="mb-8">
                 <h2 className={cn(
                   'text-3xl font-black mb-2',
                   isDark ? 'text-white' : 'text-slate-900'
@@ -234,10 +265,84 @@ const Login: React.FC<LoginProps> = ({ isDark, onLogin }) => {
                   'text-sm',
                   isDark ? 'text-slate-400' : 'text-slate-600'
                 )}>
-                  Enter your credentials to continue
+                  Enter your credentials or enter immediately with the 1-click demo account.
                 </p>
               </div>
             </motion.div>
+
+            {/* Quick 1-Click Demo / Temp Account Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className={cn(
+                'p-5 rounded-2xl border mb-8 relative overflow-hidden transition-all duration-300 shadow-lg',
+                isDark
+                  ? 'bg-gradient-to-br from-emerald-950/40 via-slate-900/90 to-teal-950/30 border-emerald-500/40 shadow-emerald-950/30'
+                  : 'bg-gradient-to-br from-emerald-50 via-teal-50/50 to-white border-emerald-300 shadow-emerald-100'
+              )}
+            >
+              <div className="flex items-center justify-between gap-3 mb-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 text-slate-950 flex items-center justify-center shadow-md shadow-emerald-500/30">
+                    <Zap className="w-4 h-4 fill-slate-950" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-sm text-emerald-400 dark:text-emerald-300 flex items-center gap-1.5">
+                      1-Click Instant Demo Login
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    </h3>
+                    <p className={cn('text-xs', isDark ? 'text-slate-400' : 'text-slate-500')}>
+                      Preconfigured temp account (<span className="font-mono text-emerald-400">demo@omniguard.ai</span>)
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold uppercase tracking-wider shrink-0">
+                  Instant
+                </span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 mt-3.5">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  disabled={loading || demoLoading}
+                  onClick={handleDemoLogin}
+                  className="flex-1 py-3 px-5 rounded-xl bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  <Zap className="w-4 h-4 fill-current" />
+                  <span>{demoLoading ? 'Authenticating Temp Account...' : 'Quick Login — Enter Dashboard'}</span>
+                  {!demoLoading && <ArrowRight className="w-4 h-4" />}
+                </motion.button>
+                <button
+                  type="button"
+                  onClick={handleFillDemoCredentials}
+                  title="Autofill form fields with demo credentials"
+                  className={cn(
+                    'py-2.5 px-3 rounded-xl border text-xs font-semibold transition-colors shrink-0 text-center',
+                    isDark ? 'border-slate-700/80 hover:bg-slate-800 text-slate-300 hover:text-white' : 'border-slate-300 hover:bg-white text-slate-700'
+                  )}
+                >
+                  Fill Form
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Visual Divider */}
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className={cn('w-full border-t', isDark ? 'border-slate-800' : 'border-slate-200')} />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase tracking-wider">
+                <span className={cn(
+                  'px-3 font-semibold',
+                  isDark ? 'bg-card text-slate-500' : 'bg-white text-slate-400'
+                )}>
+                  Or Login With Password
+                </span>
+              </div>
+            </div>
 
             <motion.form
               initial={{ opacity: 0, y: 20 }}

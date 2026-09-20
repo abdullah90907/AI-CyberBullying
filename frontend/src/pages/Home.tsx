@@ -20,15 +20,20 @@ import {
   Sparkles,
   Fingerprint,
   Radar,
-  RefreshCw
+  RefreshCw,
+  Play,
+  Zap
 } from 'lucide-react';
 import { SectionWrapper, FadeIn } from '../components/SectionWrapper';
 import FeatureCard from '../components/FeatureCard';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
+import DemoVideoModal from '../components/DemoVideoModal';
 
 interface HomeProps {
   isDark: boolean;
+  onDemoLogin?: () => Promise<{ success: boolean; error?: string }>;
+  isAuthenticatedUser?: boolean;
 }
 
 interface Article {
@@ -42,16 +47,40 @@ interface Article {
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
 
-const Home: React.FC<HomeProps> = ({ isDark }) => {
+const Home: React.FC<HomeProps> = ({ isDark, onDemoLogin, isAuthenticatedUser }) => {
   const [news, setNews] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
+  const navigate = useNavigate();
   
   const isAuthenticated = () => {
+    if (typeof isAuthenticatedUser === 'boolean') return isAuthenticatedUser;
     try {
       const savedUser = localStorage.getItem('omniguard_user');
       return savedUser ? true : false;
     } catch {
       return false;
+    }
+  };
+
+  const handleQuickDemo = async () => {
+    if (!onDemoLogin) {
+      navigate('/login');
+      return;
+    }
+    setIsDemoLoading(true);
+    try {
+      const res = await onDemoLogin();
+      if (res.success) {
+        navigate('/dashboard');
+      } else {
+        navigate('/login');
+      }
+    } catch {
+      navigate('/login');
+    } finally {
+      setIsDemoLoading(false);
     }
   };
 
@@ -148,7 +177,7 @@ const Home: React.FC<HomeProps> = ({ isDark }) => {
               </FadeIn>
 
               <FadeIn delay={0.3}>
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-4 items-center">
                   <Link to="/features">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
@@ -171,9 +200,51 @@ const Home: React.FC<HomeProps> = ({ isDark }) => {
                       )}
                     >
                       <Shield className="w-5 h-5" />
-                      Get Started
+                      {isAuthenticated() ? 'Open Dashboard' : 'Get Started'}
                     </motion.button>
                   </Link>
+
+                  {/* Highlighted YouTube Demo Video Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setIsVideoModalOpen(true)}
+                    className={cn(
+                      'relative group px-6 py-3.5 rounded-full font-bold text-base transition-all duration-300 flex items-center gap-3 overflow-hidden border-2 shadow-lg cursor-pointer',
+                      isDark
+                        ? 'border-red-500/70 bg-gradient-to-r from-red-600/20 via-rose-500/15 to-red-600/30 text-white shadow-red-950/40 hover:border-red-400 hover:shadow-red-500/30 hover:bg-red-600/30'
+                        : 'border-red-500/70 bg-gradient-to-r from-red-50 via-rose-50/60 to-red-100 text-red-600 shadow-red-200/50 hover:text-white hover:bg-gradient-to-r hover:from-red-600 hover:to-rose-600 hover:border-red-500 hover:shadow-red-400/40'
+                    )}
+                  >
+                    {/* Subtle pulse highlight indicator */}
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                    </span>
+                    <div className="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                      <Play className="w-3 h-3 fill-white ml-0.5" />
+                    </div>
+                    <span>Watch Demo</span>
+                  </motion.button>
+
+                  {/* 1-Click Demo Login if not logged in */}
+                  {!isAuthenticated() && (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleQuickDemo}
+                      disabled={isDemoLoading}
+                      className={cn(
+                        'px-5 py-3 rounded-full border font-bold text-sm transition-all duration-300 flex items-center gap-2 cursor-pointer',
+                        isDark
+                          ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-400 shadow-lg shadow-emerald-500/10'
+                          : 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 shadow-sm'
+                      )}
+                    >
+                      <Zap className="w-4 h-4 fill-emerald-400 text-emerald-400" />
+                      <span>{isDemoLoading ? 'Entering...' : '⚡ Quick Demo'}</span>
+                    </motion.button>
+                  )}
                 </div>
               </FadeIn>
             </div>
@@ -618,6 +689,12 @@ const Home: React.FC<HomeProps> = ({ isDark }) => {
           </FadeIn>
         </div>
       </SectionWrapper>
+
+      <DemoVideoModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        isDark={isDark}
+      />
     </>
   );
 };

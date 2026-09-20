@@ -7,12 +7,34 @@ import { cn } from '../lib/utils';
 interface NavbarProps {
   isDark: boolean;
   toggleTheme: () => void;
+  isAuthenticated?: boolean;
+  onDemoLogin?: () => Promise<{ success: boolean; error?: string }>;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme }) => {
+const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, isAuthenticated, onDemoLogin }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isDemoLoggingIn, setIsDemoLoggingIn] = useState(false);
   const location = useLocation();
+
+  const isUserAuthenticated = () => {
+    if (typeof isAuthenticated === 'boolean') return isAuthenticated;
+    try {
+      return Boolean(localStorage.getItem('omniguard_user'));
+    } catch {
+      return false;
+    }
+  };
+
+  const handleQuickDemo = async () => {
+    if (!onDemoLogin) return;
+    setIsDemoLoggingIn(true);
+    try {
+      await onDemoLogin();
+    } finally {
+      setIsDemoLoggingIn(false);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,15 +114,45 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme }) => {
               {isDark ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-indigo-600" />}
             </motion.button>
             
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-              <Link
-                to="/login"
-                className="px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-semibold hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 flex items-center gap-2"
-              >
-                Get Started
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </motion.div>
+            {isUserAuthenticated() ? (
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  to="/dashboard"
+                  className="px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-semibold hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 flex items-center gap-2"
+                >
+                  <Shield className="w-4 h-4" />
+                  Dashboard
+                </Link>
+              </motion.div>
+            ) : (
+              <div className="flex items-center gap-3">
+                {onDemoLogin && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={handleQuickDemo}
+                    disabled={isDemoLoggingIn}
+                    className={cn(
+                      'px-4 py-2 rounded-full border text-xs font-bold transition-all flex items-center gap-1.5',
+                      isDark
+                        ? 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20'
+                        : 'border-emerald-300 text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
+                    )}
+                  >
+                    <span>{isDemoLoggingIn ? 'Logging In...' : '⚡ Demo Access'}</span>
+                  </motion.button>
+                )}
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+                  <Link
+                    to="/login"
+                    className="px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-semibold hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 flex items-center gap-2"
+                  >
+                    Sign In
+                    <ChevronRight className="w-4 h-4" />
+                  </Link>
+                </motion.div>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-4 md:hidden">
@@ -152,13 +204,36 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme }) => {
                   {link.name}
                 </Link>
               ))}
-              <Link
-                to="/login"
-                className="mt-4 px-6 py-3 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-semibold text-center"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Get Started
-              </Link>
+              {isUserAuthenticated() ? (
+                <Link
+                  to="/dashboard"
+                  className="mt-4 px-6 py-3 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-semibold text-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <div className="flex flex-col gap-2 mt-4">
+                  {onDemoLogin && (
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        handleQuickDemo();
+                      }}
+                      className="px-6 py-3 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-bold text-center"
+                    >
+                      ⚡ 1-Click Demo Login
+                    </button>
+                  )}
+                  <Link
+                    to="/login"
+                    className="px-6 py-3 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-semibold text-center"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
